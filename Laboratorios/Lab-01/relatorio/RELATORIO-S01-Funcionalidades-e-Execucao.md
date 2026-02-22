@@ -75,7 +75,7 @@ Defaults utilizados (podem ser sobrescritos por variáveis de ambiente):
 Na pasta `Laboratorios/Lab-01`:
 
 ```powershell
-cd C:\PUC_2026\LabMedExp\Laboratorios\Lab-01
+cd LabMedExp\Laboratorios\Lab-01
 python fetch_repos.py
 ```
 
@@ -136,7 +136,7 @@ Após a coleta, é realizada uma validação leve para identificar repositórios
 Os testes unitários validam parsing de `.env`, leitura de query e tratamento de respostas HTTP/JSON usando `mock` (sem acesso à rede):
 
 ```powershell
-cd C:\PUC_2026\LabMedExp\Laboratorios\Lab-01
+cd LabMedExp\Laboratorios\Lab-01
 python -m unittest -v test_fetch_repos_unit.py
 ```
 
@@ -145,7 +145,7 @@ python -m unittest -v test_fetch_repos_unit.py
 Os testes de integração requerem `GITHUB_TOKEN` válido. O teste rápido verifica autenticação e `rateLimit`:
 
 ```powershell
-cd C:\PUC_2026\LabMedExp\Laboratorios\Lab-01
+cd LabMedExp\Laboratorios\Lab-01
 $env:GITHUB_TOKEN = "<seu_token_aqui>"
 python -m unittest -v test_integration_github_graphql.py
 ```

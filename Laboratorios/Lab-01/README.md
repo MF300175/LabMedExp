@@ -34,12 +34,12 @@ A criar nas etapas: `repos_1000.csv`, `analyze.py` (ou notebook) e os PDFs dos r
 
 ## Execução (Lab01S01)
 
-O script `fetch_repos.py` já vem configurado para ser mais estável em redes instáveis:
+O script `fetch_repos.py` configurado para ser mais estável em redes instáveis:
 
 - `LAB01_PAGE_SIZE=10` (padrão)
 - `LAB01_MAX_RETRIES=8` (padrão)
 
-Você pode sobrescrever esses valores via variáveis de ambiente se quiser.
+Sobrescrever esses valores via variáveis de ambiente se quiser.
 
 Flags úteis (opcionais):
 
