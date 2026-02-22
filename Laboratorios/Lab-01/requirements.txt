@@ -1,0 +1,2 @@
+# Lab 01 – apenas HTTP; nenhuma lib que encapsule a API do GitHub
+requests>=2.28.0

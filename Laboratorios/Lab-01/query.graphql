@@ -1,0 +1,44 @@
+# Lab 01: 1.000 repositórios com MAIOR número de estrelas (enunciado).
+# A busca GraphQL não ordena por estrelas; incluir stargazerCount e ordenar no script.
+# Paginação: primeira página cursor=null; próximas use pageInfo.endCursor.
+# Documentação: QUERY-GRAPHQL-Lab01.md
+
+query TopRepos($cursor: String, $first: Int = 25) {
+  search(
+    query: "stars:>1"
+    type: REPOSITORY
+    first: $first
+    after: $cursor
+  ) {
+    repositoryCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      ... on Repository {
+        name
+        nameWithOwner
+        url
+        stargazerCount
+        createdAt
+        pushedAt
+        primaryLanguage {
+          name
+        }
+        pullRequests(first: 1, states: [MERGED]) {
+          totalCount
+        }
+        releases(first: 1) {
+          totalCount
+        }
+        issues(first: 1) {
+          totalCount
+        }
+        issuesClosed: issues(first: 1, states: [CLOSED]) {
+          totalCount
+        }
+      }
+    }
+  }
+}
