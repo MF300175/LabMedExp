@@ -16,8 +16,8 @@ Os objetivos específicos desta etapa são:
 2. Implementar um script que execute requisições HTTP para `https://api.github.com/graphql` e colete dados de **100 repositórios**.
 3. Gerar artefatos locais (JSON) que permitam auditoria/validação da coleta.
 
-Arquivos centrais:
 
+Arquivos centrais (todos localizados em `Lab01S01/`):
 - `query.graphql`: consulta GraphQL utilizada na coleta.
 - `fetch_repos.py`: script de coleta automática.
 
@@ -28,11 +28,13 @@ Arquivos centrais:
 - Linguagem: Python 3.
 - Dependência de HTTP: `requests` (instalada via `requirements.txt`).
 
-Instalação:
 
+Instalação (na subpasta da etapa):
 ```powershell
+cd LabMedExp\Laboratorios\Lab-01\Lab01S01
 pip install -r requirements.txt
 ```
+
 
 ### 3.2 Fonte de dados e autenticação
 
@@ -44,18 +46,17 @@ As requisições são realizadas contra o endpoint da GitHub GraphQL API:
 
 O token é lido de `GITHUB_TOKEN`, definido no ambiente ou em um arquivo `.env` local.
 
-Configuração por sessão (PowerShell):
 
+Configuração por sessão (PowerShell):
 ```powershell
+cd LabMedExp\Laboratorios\Lab-01\Lab01S01
 $env:GITHUB_TOKEN = "<seu_token_aqui>"
 ```
 
-Configuração por arquivo `.env` (local):
-
+Configuração por arquivo `.env` (local, dentro da subpasta da etapa):
 ```env
 GITHUB_TOKEN=<seu_token_aqui>
 ```
-
 Observação: o `.env` é para uso local e não deve ser versionado.
 
 ### 3.3 Estratégia de coleta e robustez

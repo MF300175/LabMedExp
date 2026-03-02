@@ -13,7 +13,7 @@ Plano oficial da disciplina: [joaopauloaramuni/laboratorio-de-experimentacao-de-
 | **Artigos/** | PDFs de apoio e referência da disciplina |
 | **Artigos/Fichamentos/** | Fichamentos em português com relação às RQs e medição/experimentação |
 | **Laboratorios/** | Entregas dos 5 laboratórios (sprints) |
-| **Laboratorios/Lab-01/** | Sprint 1 – Características de repositórios populares (GitHub) |
+| **Laboratorios/Lab-01/** | Sprint 1 – Características de repositórios populares (GitHub, com subpastas por etapa: Lab01S01, Lab01S02, etc.) |
 | **Laboratorios/Lab-02/** | Sprint 2 – Qualidade de sistemas Java |
 | **Laboratorios/Lab-03/** | Sprint 3 – Code review no GitHub |
 | **Laboratorios/Lab-04/** | Sprint 4 – Visualização de dados (ferramenta de BI) |
@@ -32,7 +32,7 @@ Plano oficial da disciplina: [joaopauloaramuni/laboratorio-de-experimentacao-de-
 | **Lab 04** | Visualização de dados utilizando uma ferramenta de BI |
 | **Lab 05** | GraphQL vs REST – Um experimento controlado |
 
-Detalhes e enunciados: **[Laboratorios/README.md](Laboratorios/README.md)** e na pasta de cada lab.
+Detalhes e enunciados: **[Laboratorios/README.md](Laboratorios/README.md)** e na pasta de cada lab. Para o Lab-01, cada etapa (S01, S02, S03) possui subpasta própria com scripts, dados e relatórios independentes.
 
 ---
 

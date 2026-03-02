@@ -32,36 +32,51 @@ A criar nas etapas: `repos_1000.csv`, `analyze.py` (ou notebook) e os PDFs dos r
 
 ## Testes
 
+
 ## Execução (Lab01S01)
 
-O script `fetch_repos.py` configurado para ser mais estável em redes instáveis:
+1. Acesse a pasta da etapa:
+   ```powershell
+   cd LabMedExp\Laboratorios\Lab-01\Lab01S01
+   ```
+2. Execute o script de coleta:
+   ```powershell
+   python fetch_repos.py
+   ```
+   Os dados serão salvos em `data/` dentro desta subpasta.
+
+### Parâmetros e flags
 
 - `LAB01_PAGE_SIZE=10` (padrão)
 - `LAB01_MAX_RETRIES=8` (padrão)
-
-Sobrescrever esses valores via variáveis de ambiente se quiser.
-
-Flags úteis (opcionais):
-
 - `LAB01_DEBUG=1` (logs de debug da requisição)
 - `LAB01_SHOW_SAMPLE=1` (imprime uma amostra do primeiro repositório)
+
+Esses valores podem ser sobrescritos via variáveis de ambiente.
 
 ### Testes unitários (offline, sem chamar a API)
 
 Roda apenas testes com `mock`, validando parsing de `.env`, leitura da query e tratamento de respostas HTTP/JSON.
 
-- `python -m unittest -v test_fetch_repos_unit.py`
+Execute na subpasta da etapa:
+```powershell
+cd LabMedExp\Laboratorios\Lab-01\Lab01S01
+python -m unittest -v test_fetch_repos_unit.py
+```
 
 ### Testes reais (integração com GitHub GraphQL)
 
 Os testes em `test_integration_github_graphql.py` **só rodam** se `GITHUB_TOKEN` estiver definido (caso contrário ficam como *skipped*).
 
-- Defina o token (exemplo só para a sessão atual do PowerShell):
-  - `$env:GITHUB_TOKEN = "<seu_token>"`
-- Rode:
-  - `python -m unittest -v test_integration_github_graphql.py`
+Defina o token (exemplo só para a sessão atual do PowerShell):
+```powershell
+cd LabMedExp\Laboratorios\Lab-01\Lab01S01
+$env:GITHUB_TOKEN = "<seu_token>"
+python -m unittest -v test_integration_github_graphql.py
+```
 
 Opcional (mais pesado): smoke test com a query do lab (primeira página, 100 repos):
-
-- `$env:RUN_SLOW_INTEGRATION = "1"`
-- `python -m unittest -v test_integration_github_graphql.py`
+```powershell
+$env:RUN_SLOW_INTEGRATION = "1"
+python -m unittest -v test_integration_github_graphql.py
+```
