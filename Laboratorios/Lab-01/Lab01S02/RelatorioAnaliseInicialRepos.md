@@ -84,10 +84,3 @@ bar
 - A quantidade de PRs aceitas e releases varia amplamente, sugerindo diferentes modelos de governança e colaboração.
 - Issues fechadas indicam alto engajamento da comunidade em projetos populares.
 
-## Sugestões para Trabalhos Futuros
-
-- Analisar correlação entre idade, estrelas e engajamento.
-- Investigar padrões de atualização e releases por linguagem.
-- Comparar com estudos prévios sobre popularidade e colaboração em software livre.
-
-*Obs: Gráficos são ilustrativos, baseados nos dados sumarizados.*
