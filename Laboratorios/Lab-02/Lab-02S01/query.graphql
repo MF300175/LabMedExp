@@ -1,0 +1,25 @@
+query TopJavaRepos($queryString: String!, $first: Int!, $cursor: String) {
+  search(query: $queryString, type: REPOSITORY, first: $first, after: $cursor) {
+    repositoryCount
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    nodes {
+      ... on Repository {
+        name
+        nameWithOwner
+        url
+        stargazerCount
+        createdAt
+        pushedAt
+        primaryLanguage {
+          name
+        }
+        releases(first: 1) {
+          totalCount
+        }
+      }
+    }
+  }
+}

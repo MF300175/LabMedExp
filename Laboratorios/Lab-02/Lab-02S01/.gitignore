@@ -1,0 +1,8 @@
+# Ambiente local
+.env
+
+# Artefatos auxiliares de execução
+__pycache__/
+temp/
+logs/
+data/ck_output/
