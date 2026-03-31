@@ -109,3 +109,5 @@ Saída esperada:
 - O clone local é removido ao final para economizar disco.
 - Se o CK mudar o nome/estrutura dos CSVs, ajuste o parse em `collect_sample_metrics.py`.
 - Logs de execução são gerados localmente quando necessário e não são parte obrigatória da entrega versionada.
+- O `sample_metrics.csv` é apenas uma prova de conceito; amostras muito pequenas (ex.: poucas classes) não são representativas para análise de qualidade.
+- O pipeline automático (`run_s01_pipeline.ps1`) é voltado para ambiente Windows/PowerShell.

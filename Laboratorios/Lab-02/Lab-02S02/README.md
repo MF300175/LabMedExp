@@ -15,8 +15,17 @@ Consolidar as metricas de qualidade (CBO, DIT, LCOM) para toda a amostra e prepa
 
 - `data/metrics_all_1000_repos.csv`
 - `data/metrics_all_1000_repos_cleaned.csv`
+- `data/summary_statistics.txt`
+- `data/correlation_matrix.csv`
 - `HIPOTESES-S02.md`
 - `RELATORIO-S02.md`
+- `logs/timing_summary.txt`
+
+## Scripts
+
+- `collect_metrics_batch.py`: coleta em lote (clone + CK + cloc)
+- `validate_data.py`: limpeza e validacao do CSV consolidado
+- `summarize_statistics.py`: estatisticas descritivas e correlacao preliminar
 
 ## Status
 

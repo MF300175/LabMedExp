@@ -33,6 +33,7 @@ Analisar aspectos de qualidade interna de repositórios Java através de métric
 - **Maturidade:** idade em anos do repositório (desde criação)
 - **Atividade:** número total de releases
 - **Tamanho:** linhas de código (LOC) e linhas de comentários
+  - Medição planejada via `cloc` durante a Sprint S02 (após o clone local).
 
 ### 3.2 Métricas de Qualidade (Ferramenta CK)
 
@@ -83,7 +84,7 @@ Lab-02/
 - **Entrada:** GitHub Token (variável de ambiente `GITHUB_TOKEN`)
 - **Saída:** 
   - `data/repos_1000.json` – Lista em JSON com dados brutos (name, url, stars, created_at, updated_at, releases count, etc.)
-  - `data/repos_1000.csv` – Versão resumida em CSV (repositório, URL, estrelas, data criação, releases, LOC, comentários)
+  - `data/repos_1000.csv` – Versão resumida em CSV (repositório, URL, estrelas, data criação, releases, linguagem primária)
 - **Tecnologia:** Python + `requests` ou `PyGithub` library
 - **Observações:**
   - Implementar paginação para respeitar limites da API
@@ -112,7 +113,7 @@ Lab-02/
 - **Tecnologia:** Python (`os`, `subprocess`, `pandas`)
 - **Estrutura:**
   ```python
-  # script: collect_metrics.py
+  # script: collect_sample_metrics.py
   def clone_repo(url, dest):
       # git clone ...
       
@@ -199,16 +200,17 @@ Lab-02S01/
 - **Descrição:** Executar script de coleta em batch para todos os 1.000 repositórios
 - **Entrada:**
   - `data/repos_1000.csv` (de S01)
-  - Script `collect_metrics.py`
+  - Script `collect_metrics_batch.py`
 - **Saída:**
   - `data/metrics_all_1000_repos.csv` – Consolidação de todas as métricas
-    - Colunas: `repository`, `url`, `stars`, `created_at`, `releases`, `cbo_mean`, `cbo_median`, `cbo_std`, `dit_mean`, `dit_median`, `dit_std`, `lcom_mean`, `lcom_median`, `lcom_std`
+    - Colunas: `repository`, `url`, `stars`, `created_at`, `releases`, `loc`, `comment_lines`, `cbo_mean`, `cbo_median`, `cbo_std`, `dit_mean`, `dit_median`, `dit_std`, `lcom_mean`, `lcom_median`, `lcom_std`
 - **Tecnologia:** Python + multiprocessing (paralelização)
 - **Observações:**
   - Implementar **checkpoint resumption** (caso um repositório falhe, não reiniciar do 0)
   - Respeitar rate-limits da API GitHub
   - Monitorar consumo de disco (repositórios temporários)
   - Relatório de sucesso/falha por repositório
+  - Medição de tamanho via `cloc` por repositório (LOC e linhas de comentários)
 - **Tempo estimado:** 3–7 dias (dependendo de recursos)
 
 #### **Tarefa 2.2:** Validação e Limpeza de Dados

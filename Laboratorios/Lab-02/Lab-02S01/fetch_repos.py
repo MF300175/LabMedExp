@@ -24,8 +24,10 @@ GRAPHQL_URL = "https://api.github.com/graphql"
 SCRIPT_DIR = Path(__file__).resolve().parent
 QUERY_FILE = SCRIPT_DIR / "query.graphql"
 DATA_DIR = SCRIPT_DIR / "data"
+LOGS_DIR = SCRIPT_DIR / "logs"
 OUTPUT_JSON = DATA_DIR / "repos_1000.json"
 OUTPUT_CSV = DATA_DIR / "repos_1000.csv"
+TIME_LOG = LOGS_DIR / "timing.log"
 
 
 def load_env() -> None:
@@ -222,9 +224,17 @@ def write_outputs(rows: list[dict[str, Any]]) -> None:
         writer.writeheader()
         writer.writerows(rows)
 
+def log_timing(label: str, start: float, end: float) -> None:
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    elapsed = end - start
+    stamp = datetime.now(timezone.utc).isoformat()
+    with TIME_LOG.open("a", encoding="utf-8") as file:
+        file.write(f"[{stamp}] {label}: {elapsed:.2f}s\n")
+
 
 
 def main() -> None:
+    t0 = time.perf_counter()
     settings = get_settings()
     query = read_query()
 
@@ -254,6 +264,8 @@ def main() -> None:
     print("Concluído.")
     print(f"JSON: {OUTPUT_JSON}")
     print(f"CSV : {OUTPUT_CSV}")
+    t1 = time.perf_counter()
+    log_timing("fetch_repos", t0, t1)
 
 
 if __name__ == "__main__":

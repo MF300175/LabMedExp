@@ -25,10 +25,12 @@ from typing import Iterable
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DATA_DIR = SCRIPT_DIR / "data"
+LOGS_DIR = SCRIPT_DIR / "logs"
 TEMP_DIR = SCRIPT_DIR / "temp"
 INPUT_REPOS_CSV = DATA_DIR / "repos_1000.csv"
 OUTPUT_SAMPLE_CSV = DATA_DIR / "sample_metrics.csv"
 CK_OUTPUT_DIR = DATA_DIR / "ck_output"
+TIME_LOG = LOGS_DIR / "timing.log"
 
 
 @dataclass
@@ -232,9 +234,17 @@ def write_sample_metrics(repo: RepoInfo, metrics: dict[str, float]) -> None:
         writer.writeheader()
         writer.writerow(row)
 
+def log_timing(label: str, start: float, end: float) -> None:
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    elapsed = end - start
+    stamp = time.strftime("%Y-%m-%dT%H:%M:%S")
+    with TIME_LOG.open("a", encoding="utf-8") as file:
+        file.write(f"[{stamp}] {label}: {elapsed:.2f}s\n")
+
 
 
 def main() -> None:
+    t0 = time.perf_counter()
     repo = read_first_repo()
     print(f"Repositório de amostra: {repo.name_with_owner}")
 
@@ -249,6 +259,8 @@ def main() -> None:
 
     print("Concluído.")
     print(f"Saída: {OUTPUT_SAMPLE_CSV}")
+    t1 = time.perf_counter()
+    log_timing("collect_sample_metrics", t0, t1)
 
 
 if __name__ == "__main__":
