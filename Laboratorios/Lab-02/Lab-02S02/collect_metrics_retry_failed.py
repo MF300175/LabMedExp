@@ -1,11 +1,13 @@
 """
-Lab-02S02: coleta em lote das métricas de qualidade (CK) e tamanho (cloc).
+Lab-02S02: reprocessar apenas repositórios faltantes.
 
-Fluxo:
-1) Lê ../Lab-02S01/data/repos_1000.csv
-2) Para cada repositório: clone → CK → cloc → sumariza métricas
-3) Salva data/metrics_all_1000_repos.csv
-4) Registra sucessos/falhas em logs/collection_log.txt
+Entrada:
+- /tmp/repos_faltantes.txt (lista name_with_owner)
+- ../Lab-02S01/data/repos_1000.csv (metadados de processo)
+
+Saída:
+- data/metrics_all_1000_repos.csv (append)
+- logs/collection_log.txt
 """
 
 from __future__ import annotations
@@ -30,12 +32,12 @@ S01_DIR = ROOT_DIR / "Lab-02S01"
 S02_DIR = Path(__file__).resolve().parent
 
 INPUT_REPOS_CSV = S01_DIR / "data" / "repos_1000.csv"
+MISSING_LIST = Path(os.environ.get("LAB02_MISSING_LIST", "/tmp/repos_faltantes.txt"))
+
 DATA_DIR = S02_DIR / "data"
 LOGS_DIR = S02_DIR / "logs"
 OUTPUT_CSV = DATA_DIR / "metrics_all_1000_repos.csv"
 LOG_FILE = LOGS_DIR / "collection_log.txt"
-TIME_LOG = LOGS_DIR / "timing.log"
-TIME_SUMMARY = LOGS_DIR / "timing_summary.txt"
 TEMP_DIR = S02_DIR / "temp"
 CK_OUTPUT_DIR = DATA_DIR / "ck_output"
 
@@ -89,24 +91,30 @@ def run_command(command: list[str], cwd: Path | None = None) -> subprocess.Compl
     return subprocess.run(command, cwd=cwd, capture_output=True, text=True)
 
 
-def read_repos() -> list[RepoInfo]:
+def read_all_repos() -> dict[str, RepoInfo]:
     if not INPUT_REPOS_CSV.exists():
         print(f"Erro: arquivo não encontrado: {INPUT_REPOS_CSV}", file=sys.stderr)
         sys.exit(1)
-    repos: list[RepoInfo] = []
+    mapping: dict[str, RepoInfo] = {}
     with INPUT_REPOS_CSV.open("r", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            repos.append(
-                RepoInfo(
-                    name_with_owner=row["name_with_owner"],
-                    url=row["url"],
-                    stargazers=int(row["stargazers"]),
-                    created_at=row["created_at"],
-                    releases_count=int(row["releases_count"]),
-                )
+            mapping[row["name_with_owner"]] = RepoInfo(
+                name_with_owner=row["name_with_owner"],
+                url=row["url"],
+                stargazers=int(row["stargazers"]),
+                created_at=row["created_at"],
+                releases_count=int(row["releases_count"]),
             )
-    return repos
+    return mapping
+
+
+def read_missing_list() -> list[str]:
+    if not MISSING_LIST.exists():
+        print(f"Erro: lista de faltantes não encontrada: {MISSING_LIST}", file=sys.stderr)
+        sys.exit(1)
+    items = [line.strip() for line in MISSING_LIST.read_text(encoding="utf-8").splitlines()]
+    return [item for item in items if item]
 
 
 def clone_repository(repo: RepoInfo, destination: Path) -> Path:
@@ -142,10 +150,8 @@ def run_ck(repo_dir: Path, ck_output_dir: Path) -> Path:
     result = run_command(command)
     class_csv = ck_output_dir / "class.csv"
     if not class_csv.exists():
-        # Se o CK falhar, mas o stderr for só warning de log4j, ainda assim não há class.csv.
         raise RuntimeError("class.csv não encontrado após CK.")
     if result.returncode != 0:
-        # Alguns casos retornam código != 0 por warnings de log4j, mas geram class.csv.
         err = (result.stderr or "").strip()
         if err and "No appenders could be found for logger" not in err:
             raise RuntimeError(err or result.stdout.strip())
@@ -213,17 +219,6 @@ def summarize_ck_metrics(class_csv: Path) -> dict[str, float]:
     }
 
 
-def read_processed(output_csv: Path) -> set[str]:
-    if not output_csv.exists():
-        return set()
-    processed: set[str] = set()
-    with output_csv.open("r", encoding="utf-8") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            processed.add(row.get("repository", ""))
-    return processed
-
-
 def append_row(output_csv: Path, row: dict[str, object]) -> None:
     output_csv.parent.mkdir(parents=True, exist_ok=True)
     exists = output_csv.exists()
@@ -238,55 +233,26 @@ def append_row(output_csv: Path, row: dict[str, object]) -> None:
 def log_line(message: str) -> None:
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().isoformat(timespec="seconds")
-    LOG_FILE.write_text("", encoding="utf-8") if not LOG_FILE.exists() else None
     with LOG_FILE.open("a", encoding="utf-8") as file:
         file.write(f"[{timestamp}] {message}\n")
 
-def log_timing(label: str, start: float, end: float) -> None:
-    LOGS_DIR.mkdir(parents=True, exist_ok=True)
-    elapsed = end - start
-    stamp = datetime.now().isoformat(timespec="seconds")
-    with TIME_LOG.open("a", encoding="utf-8") as file:
-        file.write(f"[{stamp}] {label}: {elapsed:.2f}s\n")
-
-def log_pipeline_start() -> None:
-    LOGS_DIR.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().isoformat(timespec="seconds")
-    with TIME_LOG.open("a", encoding="utf-8") as file:
-        file.write(f"[{stamp}] PIPELINE_START\n")
-    TIME_SUMMARY.write_text("", encoding="utf-8")
-
 
 def main() -> None:
-    log_pipeline_start()
-    t0 = time.perf_counter()
     if _shutil.which("java") is None:
         print("Erro: comando 'java' não encontrado no PATH.", file=sys.stderr)
-        print("Instale o JRE/JDK ou ajuste o PATH antes de continuar.", file=sys.stderr)
         sys.exit(1)
-    load_env()
-    ck_jar = os.environ.get("CK_JAR_PATH", "").strip()
-    if not ck_jar:
-        print("Erro: CK_JAR_PATH não definido. Configure no .env ou exporte a variável.", file=sys.stderr)
-        sys.exit(1)
-    if not Path(ck_jar).exists():
-        print(f"Erro: CK_JAR_PATH inválido: {ck_jar}", file=sys.stderr)
-        sys.exit(1)
-    max_repos_raw = os.environ.get("LAB02_MAX_REPOS", "").strip()
-    max_repos = int(max_repos_raw) if max_repos_raw.isdigit() else None
     cloc_available = _shutil.which("cloc") is not None
     if not cloc_available:
         print("Aviso: 'cloc' não encontrado. LOC e comment_lines ficarão vazios.")
-    repos = read_repos()
-    processed = read_processed(OUTPUT_CSV)
-    if max_repos is not None:
-        repos = repos[:max_repos]
 
-    print(f"Repos totais: {len(repos)}")
-    print(f"Repos já processados: {len(processed)}")
+    repos_map = read_all_repos()
+    missing = read_missing_list()
 
-    for repo in repos:
-        if repo.name_with_owner in processed:
+    print(f"Faltantes: {len(missing)}")
+    for name in missing:
+        repo = repos_map.get(name)
+        if not repo:
+            log_line(f"FAIL: {name} - repo não encontrado no CSV base")
             continue
 
         print(f"Processando {repo.name_with_owner}...")
@@ -316,9 +282,6 @@ def main() -> None:
 
     print("Concluído.")
     print(f"Saída: {OUTPUT_CSV}")
-    print(f"Log: {LOG_FILE}")
-    t1 = time.perf_counter()
-    log_timing("collect_metrics_batch", t0, t1)
 
 
 if __name__ == "__main__":
