@@ -46,17 +46,20 @@ def _pair_corr(df: pd.DataFrame, x: str, y: str) -> dict[str, float]:
     }
 
 
-def analyze_rq(df: pd.DataFrame, process_col: str, out_name: str) -> None:
+def analyze_rq(df: pd.DataFrame, process_cols: str | list[str], out_name: str) -> None:
     rows = []
-    for metric in ["cbo_mean", "dit_mean", "lcom_mean"]:
-        corr = _pair_corr(df, process_col, metric)
-        rows.append(
-            {
-                "process_metric": process_col,
-                "quality_metric": metric,
-                **corr,
-            }
-        )
+    if isinstance(process_cols, str):
+        process_cols = [process_cols]
+    for process_col in process_cols:
+        for metric in ["cbo_mean", "dit_mean", "lcom_mean"]:
+            corr = _pair_corr(df, process_col, metric)
+            rows.append(
+                {
+                    "process_metric": process_col,
+                    "quality_metric": metric,
+                    **corr,
+                }
+            )
     out_path = DATA_DIR / out_name
     pd.DataFrame(rows).to_csv(out_path, index=False)
 
@@ -81,7 +84,7 @@ def main() -> None:
     analyze_rq(df, "stargazers", "RQ01_correlacao_popularidade.csv")
     analyze_rq(df, "age_years", "RQ02_correlacao_maturidade.csv")
     analyze_rq(df, "releases_count", "RQ03_correlacao_atividade.csv")
-    analyze_rq(df, "loc", "RQ04_correlacao_tamanho.csv")
+    analyze_rq(df, ["loc", "comment_lines"], "RQ04_correlacao_tamanho.csv")
 
     # Resumo geral
     summary_lines = [

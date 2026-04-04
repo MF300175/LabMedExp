@@ -39,7 +39,7 @@ def main() -> None:
 
     lines = ["Validacao estatistica (Shapiro-Wilk + Spearman)", ""]
 
-    for col in ["cbo_mean", "dit_mean", "lcom_mean", "stargazers", "loc"]:
+    for col in ["cbo_mean", "dit_mean", "lcom_mean", "stargazers", "loc", "comment_lines"]:
         series = df[col].dropna()
         if len(series) > 5000:
             series = series.sample(5000, random_state=42)
@@ -47,7 +47,7 @@ def main() -> None:
         lines.append(f"Shapiro {col}: W={stat:.4f}, p={p:.4g} (n={len(series)})")
 
     # Exemplo Spearman global entre processo e qualidade
-    for proc in ["stargazers", "age_years", "releases_count", "loc"]:
+    for proc in ["stargazers", "age_years", "releases_count", "loc", "comment_lines"]:
         for qual in ["cbo_mean", "dit_mean", "lcom_mean"]:
             sub = df[[proc, qual]].dropna()
             if len(sub) < 3:

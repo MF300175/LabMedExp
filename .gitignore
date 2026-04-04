@@ -1,4 +1,9 @@
 .codex/
+.codex
 **/data/
 **/logs/
 **/venv/
+**/.env
+Laboratorios/Lab-02/docs/
+Laboratorios/Lab-02/Lab-02S03/figs/*.png
+!Laboratorios/Lab-02/Lab-02S03/figs/*_2026-04-03.png

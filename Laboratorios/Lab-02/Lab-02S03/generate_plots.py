@@ -69,6 +69,10 @@ def main() -> None:
     save_scatter(df, "loc", "dit_mean", "RQ04_scatter_loc_vs_dit.png")
     save_scatter(df, "loc", "lcom_mean", "RQ04_scatter_loc_vs_lcom.png")
 
+    save_scatter(df, "comment_lines", "cbo_mean", "RQ04_scatter_comments_vs_cbo_2026-04-03.png")
+    save_scatter(df, "comment_lines", "dit_mean", "RQ04_scatter_comments_vs_dit_2026-04-03.png")
+    save_scatter(df, "comment_lines", "lcom_mean", "RQ04_scatter_comments_vs_lcom_2026-04-03.png")
+
     # Heatmap de correlacao geral
     corr = df[["stargazers", "age_years", "releases_count", "loc", "comment_lines",
                "cbo_mean", "dit_mean", "lcom_mean"]].corr(numeric_only=True)
